@@ -12,11 +12,20 @@ import common._
 class Simulator(val taskSupport: TaskSupport, val timeStats: TimeStatistics) {
 
   def updateBoundaries(boundaries: Boundaries, body: Body): Boundaries = {
-    ???
+    boundaries.minX = math.min(boundaries.minX, body.x)
+    boundaries.minY = math.min(boundaries.minY, body.y)
+    boundaries.maxX = math.max(boundaries.maxX, body.x)
+    boundaries.maxY = math.max(boundaries.maxY, body.y)
+    boundaries
   }
 
   def mergeBoundaries(a: Boundaries, b: Boundaries): Boundaries = {
-    ???
+    val newBoundaries = new Boundaries
+    newBoundaries.minX = math.min(a.minX, b.minX)
+    newBoundaries.minY = math.min(a.minY, b.minY)
+    newBoundaries.maxX = math.max(a.maxX, b.maxX)
+    newBoundaries.maxY = math.max(a.maxY, b.maxY)
+    newBoundaries
   }
 
   def computeBoundaries(bodies: Seq[Body]): Boundaries = timeStats.timed("boundaries") {
@@ -84,13 +93,13 @@ class Simulator(val taskSupport: TaskSupport, val timeStats: TimeStatistics) {
   def step(bodies: Seq[Body]): (Seq[Body], Quad) = {
     // 1. compute boundaries
     val boundaries = computeBoundaries(bodies)
-    
+
     // 2. compute sector matrix
     val sectorMatrix = computeSectorMatrix(bodies, boundaries)
 
     // 3. compute quad tree
     val quad = computeQuad(sectorMatrix)
-    
+
     // 4. eliminate outliers
     val filteredBodies = eliminateOutliers(bodies, sectorMatrix, quad)
 
