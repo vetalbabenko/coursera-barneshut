@@ -168,12 +168,10 @@ package object barneshut {
     for (i <- 0 until matrix.length) matrix(i) = new ConcBuffer
 
     def +=(b: Body): SectorMatrix = {
-      val cordinate: (Double, Double) = (math.floor(b.x / sectorSize), math.floor(b.y / sectorSize))
-      if (cordinate._1 >= boundaries.maxX || cordinate._2 >= boundaries.maxY) {
-        apply(boundaries.maxX.toInt - 1, boundaries.maxY.toInt - 1) += b
-      } else {
-        apply(cordinate._1.toInt, cordinate._2.toInt) += b
+      def getCoordinate(point1: Float, point2: Float): Int = {
+        ((point1 - point2) / sectorSize).toInt max 0 min sectorPrecision - 1
       }
+      apply(getCoordinate(b.x, boundaries.minX), getCoordinate(b.y, boundaries.minY)) += b
       this
     }
 
